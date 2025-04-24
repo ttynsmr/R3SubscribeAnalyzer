@@ -1,0 +1,9 @@
+{
+  "$schema": "https://json.schemastore.org/launchsettings.json",
+  "profiles": {
+    "DebugRoslynAnalyzers": {
+      "commandName": "DebugRoslynComponent",
+      "targetProject": "../R3SubscribeAnalyzer.Sample/R3SubscribeAnalyzer.Sample.csproj"
+    }
+  }
+}
