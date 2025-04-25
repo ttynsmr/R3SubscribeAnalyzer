@@ -1,0 +1,36 @@
+name: Build R3SubscribeAnalyzer
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      # Checkout the repository
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Set up the .NET environment
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 6.0
+
+      # Restore project dependencies
+      - name: Restore dependencies
+        run: dotnet restore R3SubscribeAnalyzer.sln
+
+      # Build the project
+      - name: Build solution
+        run: dotnet build R3SubscribeAnalyzer.sln --configuration Release --no-restore
+
+      # Run tests
+      - name: Run tests
+        run: dotnet test R3SubscribeAnalyzer.sln --configuration Release --no-build --verbosity normal
