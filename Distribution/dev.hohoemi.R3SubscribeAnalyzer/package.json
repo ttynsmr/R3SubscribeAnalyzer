@@ -1,0 +1,12 @@
+{
+  "name": "dev.hohoemi.r3subscribeanalyzer",
+  "displayName": "R3SubscribeAnalyzer",
+  "version": "0.0.0",
+  "unity": "2020.1",
+  "description": "description.",
+  "author": {
+    "name": "ttynsmr",
+    "url": "https://github.com/ttynsmr"
+  },
+  "license": "MIT"
+}

@@ -1,0 +1,56 @@
+name: Release R3SubscribeAnalyzer
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  release:
+    runs-on: windows-latest
+    permissions:
+      contents: write
+      pull-requests: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
+
+      - name: Create branch for PR
+        run: |
+          git checkout -b update-dll-${{ github.ref_name }}
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 6.0
+
+      - name: Restore dependencies
+        run: dotnet restore R3SubscribeAnalyzer.sln
+
+      - name: Build solution
+        run: dotnet build R3SubscribeAnalyzer.sln --configuration Release --no-restore
+
+      - name: Copy DLL to Unity package
+        run: |
+          mkdir -p R3SubscribeAnalyzer/Runtime
+          copy R3SubscribeAnalyzer\\bin\\Release\\netstandard2.0\\R3SubscribeAnalyzer.dll R3SubscribeAnalyzer/Runtime/
+
+      - name: Commit and push changes
+        run: |
+          git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add R3SubscribeAnalyzer/Runtime/R3SubscribeAnalyzer.dll
+          git commit -m "Update DLL from build for ${{ github.ref_name }}"
+          git push origin update-dll-${{ github.ref_name }}
+
+      - name: Create Pull Request
+        run: |
+          gh auth login --with-token <<< "${{ secrets.GITHUB_TOKEN }}"
+          gh pr create --title "Update DLL for ${{ github.ref_name }}" \
+                      --body "Automated PR to update DLL from release build" \
+                      --base main \
+                      --head update-dll-${{ github.ref_name }}
