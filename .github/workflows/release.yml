@@ -1,7 +1,7 @@
 name: Release R3SubscribeAnalyzer
 
 on:
-  workflow_dispatch:  # 手動実行のみ
+  workflow_dispatch:
     inputs:
       version:
         description: 'バージョン番号（例：v1.0.0）'
@@ -51,9 +51,7 @@ jobs:
           git push origin update-dll-${{ inputs.version }}
 
       - name: Create Pull Request
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh auth login --with-token <<< "${{ secrets.GITHUB_TOKEN }}"
-          gh pr create --title "Update DLL for ${{ inputs.version }}" \
-                      --body "Automated PR to update DLL from build" \
-                      --base main \
-                      --head update-dll-${{ inputs.version }}
+          gh pr create --title "Update DLL for ${{ inputs.version }}" --body "Automated PR to update DLL from build" --base main --head update-dll-${{ inputs.version }}
