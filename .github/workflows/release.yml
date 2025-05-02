@@ -1,12 +1,9 @@
 name: Release R3SubscribeAnalyzer
 
 on:
-  workflow_dispatch:  # 手動実行のみ
-    inputs:
-      version:
-        description: 'バージョン番号（例：v1.0.0）'
-        required: true
-        type: string
+  push:
+    tags:
+      - 'v*'
 
 jobs:
   release:
@@ -24,7 +21,7 @@ jobs:
 
       - name: Create branch for PR
         run: |
-          git checkout -b update-dll-${{ inputs.version }}
+          git checkout -b update-dll-${{ github.ref_name }}
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
@@ -47,13 +44,13 @@ jobs:
           git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
           git add R3SubscribeAnalyzer/Runtime/R3SubscribeAnalyzer.dll
-          git commit -m "Update DLL for ${{ inputs.version }}"
-          git push origin update-dll-${{ inputs.version }}
+          git commit -m "Update DLL from build for ${{ github.ref_name }}"
+          git push origin update-dll-${{ github.ref_name }}
 
       - name: Create Pull Request
         run: |
           gh auth login --with-token <<< "${{ secrets.GITHUB_TOKEN }}"
-          gh pr create --title "Update DLL for ${{ inputs.version }}" \
-                      --body "Automated PR to update DLL from build" \
+          gh pr create --title "Update DLL for ${{ github.ref_name }}" \
+                      --body "Automated PR to update DLL from release build" \
                       --base main \
-                      --head update-dll-${{ inputs.version }}
+                      --head update-dll-${{ github.ref_name }}
