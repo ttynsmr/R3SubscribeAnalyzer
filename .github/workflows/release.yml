@@ -48,7 +48,7 @@ jobs:
           git config --local user.name "github-actions[bot]"
           git add R3SubscribeAnalyzer/Runtime/R3SubscribeAnalyzer.dll
           git commit -m "Update DLL for ${{ inputs.version }}"
-          git push origin update-dll-${{ inputs.version }}
+          git push --force origin update-dll-${{ inputs.version }}
 
       - name: Create Pull Request
         env:
